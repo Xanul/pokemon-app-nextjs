@@ -16,6 +16,7 @@ export const Navbar = () => {
         justifyContent: "start",
         padding: "0px 20px",
         backgroundColor: theme?.colors.gray900.value,
+        marginBottom:"10px"
       }}>
       <NextLink href="/" passHref>
         <Link

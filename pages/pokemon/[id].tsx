@@ -1,24 +1,31 @@
 import { GetStaticProps, NextPage, GetStaticPaths } from "next";
-import {
-  Card,
-  Grid,
-  Row,
-  Text,
-  Button,
-  Container,
-  Image,
-} from "@nextui-org/react";
-import React, { useEffect } from "react";
+import { Card, Grid, Row, Text, Button, Container, Image } from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
 import { pokeApi } from "../../api";
 import { Layout } from "../../components/layouts";
 import { Pokemon } from "../../interfaces";
+import { localFavorites } from "../../utils";
+
 
 interface Props {
   pokemon: Pokemon;
 }
 
 const PokemonPage: NextPage<Props> = ({ pokemon }) => {
-  console.log(pokemon.sprites.other?.dream_world.front_default);
+  
+  const [isInFavorites, setIsInFavorites] = useState(false);
+
+  const onToggleFavorite = () => {  
+    localFavorites.toggleFavorite(pokemon.id);
+    setIsInFavorites(!isInFavorites);
+  }
+
+  useEffect(() => {
+    
+    setIsInFavorites(localFavorites.existInFavorites(pokemon.id))
+
+  }, [])
+  
 
   return (
     <Layout title={pokemon.name.toUpperCase()}>
@@ -28,7 +35,7 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
             <Card.Body>
               <Card.Image
                 src={
-                  pokemon.sprites.other?.dream_world.front_default ||
+                  pokemon.sprites.other?.["official-artwork"].front_default ||
                   "/no-img.png"
                 }
                 alt={pokemon.name}
@@ -45,8 +52,14 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
               <Text h1 transform="capitalize">
                 {pokemon.name}
               </Text>
-              <Button color={"gradient"} ghost>
-                Guardar en Favoritos
+              <Button 
+                color={"gradient"} 
+                ghost={isInFavorites}
+                onClick={onToggleFavorite}
+              >
+                {
+                  isInFavorites ? "En Favoritos" : "Guardar en favoritos"
+                }
               </Button>
             </Card.Header>
             <Card.Body>
