@@ -14,8 +14,6 @@ interface Props {
 
 const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
 
-  
-  
   const [isInFavorites, setIsInFavorites] = useState(false);
 
   const onToggleFavorite = () => {  
@@ -126,18 +124,32 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
     paths: pokemonNames.map((name) => ({
       params: { name: name },
     })),
-    fallback: false,
+    fallback: "blocking",
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   
+  
+
   const { name } = params as { name: string };
+
+  const pokemon = await getPokemonInfo(name.toLocaleLowerCase());
+
+  if ( !pokemon ) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    }
+  }
 
   return {
     props: {
-      pokemon: await getPokemonInfo(name),
+      pokemon: pokemon,
     },
+    revalidate: 86400
   };
 };
 
